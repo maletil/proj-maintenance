@@ -17,7 +17,7 @@ if (isset($_GET["auth"])) {
         $id = randomStr(12);
     }
 
-    $sql = "INSERT INTO maintenance (id, Start,DNI,Type) VALUES ('" . $id . "', CURRENT_TIMESTAMP, 'DniPosible', 'Calefacción')";
+    $sql = "INSERT INTO maintenance (id, Start,DNI,Type) VALUES ('" . $id . "', CURRENT_TIMESTAMP, 'Dni', 'Tipo')";
 
     $check = json_decode(sqlGet("SELECT * FROM maintenance WHERE id = '".$id."'", $auth), true); // Check if id already exists.
 
