@@ -7,6 +7,18 @@
 ?>
 
 <head>
+    <style>
+        div {
+            background: white;
+            color: black;
+            padding: 2px 1px 6px 5px;
+            font-family: DejaVu Sans Mono, serif;
+            font-size: 0.9rem;
+        }
+        body {
+            background-color: #101010;
+        }
+    </style>
     <script>
         let method = "";
         let id = "";
@@ -47,12 +59,14 @@
         }
     </script>
 </head>
-<body>
+<body onload="id = document.getElementById('id').value;useMethod('get')">
+<div>
     <input id="id" type="text" placeholder="id" onkeyup="showResult(this.value);">
     <button onclick="useMethod('get');">get</button>
     <button onclick="useMethod('post');">post</button>
     <button onclick="useMethod('delete');">delete</button>
     <input type="checkbox" onclick="forceDeletion(this.value)">
+</div>
 <br><br>
     <div id="livesearch"></div>
 

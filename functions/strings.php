@@ -10,5 +10,5 @@ function randomStr($chars){
     return substr(str_shuffle($data),0,$chars);
 }
 function error($msg){ // Show errors
-    return json_encode(array('success' => 'false', 'error' => $msg), JSON_UNESCAPED_UNICODE);
+    return json_encode(array('success' => false, 'error' => $msg), JSON_UNESCAPED_UNICODE);
 }

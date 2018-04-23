@@ -37,6 +37,16 @@ function mysqlDBDisconnect ($conn) {
 
 // Get requests.
 
+function sqlGet ($sql, $auth){ // Returns json
+    //TODO authcode.
+    if ($sql !== ""){
+        $outputArray = getArraySQL($sql);
+        return json_encode($outputArray, JSON_UNESCAPED_UNICODE);
+    } else {
+        return false;
+    }
+}
+
 function getArraySQL($sql){ // Returns array
     $conn = mysqlDBConnect();
     $entries = 0;
@@ -49,19 +59,9 @@ function getArraySQL($sql){ // Returns array
     }
     mysqlDBDisconnect($conn);
     if ($entries !== 0) {
-        return array("entries" => $entries, "output" => $sqlArray);
+        return array("success" => true, "entries" => $entries, "output" => $sqlArray);
     } else {
-        return array('entries' => $entries);
-    }
-}
-
-function sqlGet ($sql, $auth){ // Returns json
-    //TODO authcode.
-    if ($sql !== ""){
-    $outputArray = getArraySQL($sql);
-    return json_encode($outputArray, JSON_UNESCAPED_UNICODE);
-    } else {
-        return false;
+        return array("success" => true, 'entries' => $entries);
     }
 }
 
