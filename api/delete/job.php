@@ -22,7 +22,7 @@ if (isset($_GET["auth"]) && isset($_GET["id"])) {
         case 1:
             $output = sqlPost($sql, $auth);
             if ($output) { // Success message
-                echo json_encode(array('success' => true, 'output' => $check), JSON_UNESCAPED_UNICODE);
+                echo json_encode(array('success' => true, 'deleted' => $check), JSON_UNESCAPED_UNICODE);
             }
             break;
         case 0:

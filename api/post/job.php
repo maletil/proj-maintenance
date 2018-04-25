@@ -25,7 +25,7 @@ if (isset($_GET["auth"])) {
         $output = sqlPost($sql, $auth); // Insert row.
         if ($output){ // Check success in sqlPost.
             $check = json_decode(sqlGet("SELECT * FROM maintenance WHERE id = '".$id."'", $auth), true); // Check if created.
-            echo json_encode(array('success' => true,'output' => $check), JSON_UNESCAPED_UNICODE);
+            echo json_encode(array('success' => true,'created' => $check), JSON_UNESCAPED_UNICODE);
         }
     } else {
         echo error("Id already exists. Use PATCH instead.");
