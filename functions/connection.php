@@ -9,8 +9,13 @@
 // mysqli connection.
 
 function mysqlDBConnect () {
-    $configs = require('../../private/config.php');
-
+    $path = "../../private/config.php";
+    if (file_exists($path)) {
+        $configs = require($path);
+    } else {
+        echo json_encode(array('error' => 'bad config file path'));
+        die();
+    }
     $username = $configs['username'];
     $password = $configs['password'];
     $servername = $configs['host'];
