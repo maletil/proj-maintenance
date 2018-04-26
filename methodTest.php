@@ -18,6 +18,13 @@
         body {
             background-color: #101010;
         }
+        a {
+            color: inherit;
+            text-decoration: none;
+        }
+        a:hover  {
+            text-decoration: underline;
+        }
     </style>
     <script>
         let method = "";
@@ -35,6 +42,11 @@
             id = document.getElementById('id').value;
             //forceDeletion(document.getElementById('force').checked);
             useMethod('get');
+        }
+        function getCurrentDir() {
+            let loc = window.location.pathname;
+            let dir = loc.substring(0, loc.lastIndexOf('/'));
+            return dir;
         }
         function showResult(str) {
                     document.getElementById("livesearch").innerHTML = "";
@@ -64,7 +76,7 @@
             xmlhttp.open("GET",petition,true);
             xmlhttp.send();
             if (debug) {console.log(xmlhttp);console.log(petition);}
-            document.getElementById("url").innerHTML = "[" + method + "] <a href=\"" + window.location.href + "/" + petition + "\">" + petition + "</a>";
+            document.getElementById("url").innerHTML = "[" + method + "] <a href=\"" + getCurrentDir() + "/" + petition + "\" target=\"_blank\">" + petition + "</a>";
         }
     </script>
 </head>
