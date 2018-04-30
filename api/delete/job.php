@@ -10,6 +10,13 @@ if (isset($_GET["auth"]) && isset($_GET["id"])) {
     require('../../functions/strings.php');
     require('../../functions/json.php');
     require ('../../functions/query.php');
+    $path = "../../private/config.php";
+    if (file_exists($path)) {
+        $configs = require($path);
+    } else {
+        echo json_encode(array('error' => 'bad config file path'));
+        die();
+    }
     $auth = $_GET["auth"];
     $id = $_GET["id"];
 
@@ -22,7 +29,7 @@ if (isset($_GET["auth"]) && isset($_GET["id"])) {
         case 1:
             $output = sqlPost($sql, $auth);
             if ($output) { // Success message
-                echo json_encode(array('success' => true, 'deleted' => $check), JSON_UNESCAPED_UNICODE);
+                echo json_encode(array('success' => true, 'deleted' => $check["output"]), JSON_UNESCAPED_UNICODE);
             }
             break;
         case 0:
@@ -32,7 +39,7 @@ if (isset($_GET["auth"]) && isset($_GET["id"])) {
             if ($force){
                 $output = sqlPost($sql, $auth);
                 if ($output) { // Success message
-                    echo json_encode(array('success' => true, 'output' => $check), JSON_UNESCAPED_UNICODE);
+                    echo json_encode(array('success' => true, 'deleted' => $check["output"]), JSON_UNESCAPED_UNICODE);
                 }
             } else {
                 echo error("More than one id found.");

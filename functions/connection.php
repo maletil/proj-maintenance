@@ -9,25 +9,24 @@
 // mysqli connection.
 
 function mysqlDBConnect () {
-    $path = "../../private/config.php";
-    if (file_exists($path)) {
-        $configs = require($path);
+    global $configs;
+    if ($configs !== null) {
+        $username = $configs['username'];
+        $password = $configs['password'];
+        $servername = $configs['host'];
+        $dbname = $configs['dbname'];
+
+        $conn = new mysqli($servername, $username, $password, $dbname);
+        mysqli_set_charset($conn, "utf8");
+
+        if ($conn->connect_error) {
+            die("Connection failed: " . $conn->connect_error);
+        }
+        return $conn;
     } else {
-        echo json_encode(array('error' => 'bad config file path'));
+        echo json_encode(array('error' => 'no config file provided'));
         die();
     }
-    $username = $configs['username'];
-    $password = $configs['password'];
-    $servername = $configs['host'];
-    $dbname = $configs['dbname'];
-
-    $conn = new mysqli($servername, $username, $password, $dbname);
-    mysqli_set_charset($conn, "utf8");
-
-    if ($conn->connect_error) {
-        die("Connection failed: " . $conn->connect_error);
-    }
-    return $conn;
 }
 
 function mysqlDBDisconnect ($conn) {

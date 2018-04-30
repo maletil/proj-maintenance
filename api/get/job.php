@@ -8,6 +8,13 @@
 if (isset($_GET["auth"])) {
     require ('../../functions/connection.php');
     require ('../../functions/json.php');
+    $path = "../../private/config.php";
+    if (file_exists($path)) {
+        $configs = require($path);
+    } else {
+        echo json_encode(array('error' => 'bad config file path'));
+        die();
+    }
     $auth = $_GET["auth"];
 
     if (isset($_GET["id"]) && $_GET["id"] !== ""){ // Check if no blank id is given in query
