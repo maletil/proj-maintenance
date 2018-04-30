@@ -11,7 +11,7 @@
         div {
             background: white;
             color: black;
-            padding: 2px 1px 6px 5px;
+            padding: 7px 1px 8px 8px;
             font-family: DejaVu Sans Mono, serif;
             font-size: 0.9rem;
         }
@@ -24,6 +24,28 @@
         }
         a:hover  {
             text-decoration: underline;
+        }
+        #empty {
+            padding: 1px 2px 0 2px;
+        }
+        #get {
+            color: #2e3f59;
+            box-shadow: 0 2px 0 0 #2e3f59;
+        }
+        #post {
+            color: #30634F;
+            box-shadow: 0 2px 0 0 #30634F;
+        }
+        #delete {
+            color: #893d3d;
+            box-shadow: 0 2px 0 0 #893d3d;
+        }
+        #force {
+            margin: 0;
+            vertical-align: middle;
+        }
+        pre {
+            margin: 0;
         }
     </style>
     <script>
@@ -38,19 +60,44 @@
         } else {  // IE6, IE5
             xmlhttp=new ActiveXObject("Microsoft.XMLHTTP");
         }
-        function onload() {
+
+        onload = function () {
+            console.log('asdas1');
             id = document.getElementById('id').value;
+            // let e = document.getElementById('id');
+            //e.oninput = showResult(document.getElementById('id'));
+            //e.onpropertychange = e.oninput;
             //forceDeletion(document.getElementById('force').checked);
             useMethod('get');
-        }
+        };
         function getCurrentDir() {
             let loc = window.location.pathname;
-            let dir = loc.substring(0, loc.lastIndexOf('/'));
-            return dir;
+            return loc.substring(0, loc.lastIndexOf('/'));
+        }
+        function getColor(type) {
+            switch (type){
+                case 'get':
+                    return('#1f4886');
+                case 'post':
+                    return('#1F865E');
+                case 'delete':
+                    return('#861f1f');
+                case 'patch':
+                    return('#86851f');
+            }
+        }
+        function handle(e, value){
+            if(e.keyCode === 13){
+                showResult(value);
+            }
+        }
+        function emptySearchBox() {
+            document.getElementById('id').value = null;
+            id = "";
+            method = 'get'; // Security?
+            makerequest();
         }
         function showResult(str) {
-                    document.getElementById("livesearch").innerHTML = "";
-                    document.getElementById("livesearch").style.border = "0px";
             id = str;
             method = 'get'; // Security.
             makerequest();
@@ -69,26 +116,34 @@
         function makerequest() {
             xmlhttp.onreadystatechange=function() {
                 if (this.readyState === 4 && this.status === 200) {
-                    document.getElementById("livesearch").innerText = JSON.stringify(JSON.parse(this.responseText), null, '\t');
+                    document.getElementById("json").innerText = JSON.stringify(JSON.parse(this.responseText), null,  ' ');
                 }
             };
             let petition = "api/" + method + "/job.php?auth=1234&id=" + id + force;
             xmlhttp.open("GET",petition,true);
             xmlhttp.send();
             if (debug) {console.log(xmlhttp);console.log(petition);}
-            document.getElementById("url").innerHTML = "[" + method + "] <a href=\"" + getCurrentDir() + "/" + petition + "\" target=\"_blank\">" + petition + "</a>";
+            document.getElementById("url").innerHTML = "<span id='method'>[" + method + "]</span>  <a href=\"" + getCurrentDir() + "/" + petition + "\" target=\"_blank\">" + petition + "</a>";
+            document.getElementById('method').style.color = getColor(method);
         }
     </script>
 </head>
-<body onload="onload()">
-<div>
-    <input id="id" type="text" placeholder="id" onkeyup="showResult(this.value);">
-    <button onclick="useMethod('get');">get</button>
-    <button onclick="useMethod('post');">post</button>
-    <button onclick="useMethod('delete');">delete</button>
-    <input id="force" type="checkbox" onclick="forceDeletion(this.checked)">
+<body>
+<div class="toolbar">
+    <button id="empty" onclick="emptySearchBox();">&#x2613;</button>
+    <input id="id" type="text" placeholder="id" onkeypress="handle(event, this.value)" oninput="showResult(this.value)">
+    <button id="get" style="color: #2e3f59;" onclick="useMethod('get');">get</button>
+    <button id="post" style="color: #30634F;" onclick="useMethod('post');">post</button>
+    <button id="delete" style="color: #893d3d;" onclick="useMethod('delete');">delete</button>
+    <input id="force" type="checkbox" title="Force deletion" onclick="forceDeletion(this.checked)">
 </div>
-<br><div id="url"><br></div>
-    <div id="livesearch"></div>
+<br>
+<div id="url">
+    <br>
+</div>
+<div>
+    <pre id="json"></pre>
+</div>
+
 
 </body>
