@@ -12,6 +12,7 @@
             background: white;
             color: black;
             padding: 7px 1px 8px 8px;
+            margin: 0 9px 0 9px;
             font-family: DejaVu Sans Mono, serif;
             font-size: 0.9rem;
         }
@@ -24,6 +25,9 @@
         }
         a:hover  {
             text-decoration: underline;
+        }
+        .toolbar{
+            margin-top: 17px;
         }
         #empty {
             padding: 1px 2px 0 2px;
@@ -51,24 +55,25 @@
     <script>
         let method = "";
         let id = "";
+        let dni = "";
+        let type = "";
         let force = "";
         //Config
-        let debug = false;
+        let debug = true;
         if (window.XMLHttpRequest) {
             // IE7+, Firefox, Chrome, Opera, Safari
-            xmlhttp=new XMLHttpRequest();
+            ajax=new XMLHttpRequest();
         } else {  // IE6, IE5
-            xmlhttp=new ActiveXObject("Microsoft.XMLHTTP");
+            ajax=new ActiveXObject("Microsoft.XMLHTTP");
         }
-
         onload = function () {
-            console.log('asdas1');
             id = document.getElementById('id').value;
             // let e = document.getElementById('id');
             //e.oninput = showResult(document.getElementById('id'));
             //e.onpropertychange = e.oninput;
             //forceDeletion(document.getElementById('force').checked);
             useMethod('get');
+
         };
         function getCurrentDir() {
             let loc = window.location.pathname;
@@ -87,19 +92,31 @@
             }
         }
         function handle(e, value){
-            if(e.keyCode === 13){
-                showResult(value);
+            console.log(e.target.id);
+            switch (e.target.id) {
+                case 'id':
+                    id = value;
+                    method = 'get'; // Security.
+                    makerequest();
+                    break;
+                case 'dni':
+                    dni = value;
+                    if(e.keyCode === 13){
+                        console.log("asdfaf");
+                        makerequest();
+                    }
+                    break;
+                case 'type':
+                    type = value;
+                    if(e.keyCode === 13){
+                        makerequest();
+                    }
             }
         }
         function emptySearchBox() {
             document.getElementById('id').value = null;
             id = "";
             method = 'get'; // Security?
-            makerequest();
-        }
-        function showResult(str) {
-            id = str;
-            method = 'get'; // Security.
             makerequest();
         }
         function useMethod(str) {
@@ -114,15 +131,24 @@
                 force = "";
         }
         function makerequest() {
-            xmlhttp.onreadystatechange=function() {
+            if (debug){ console.log("Me solicitan para: " + method);}
+            ajax.onreadystatechange=function() {
                 if (this.readyState === 4 && this.status === 200) {
                     document.getElementById("json").innerText = JSON.stringify(JSON.parse(this.responseText), null,  ' ');
                 }
             };
-            let petition = "api/" + method + "/job.php?auth=1234&id=" + id + force;
-            xmlhttp.open("GET",petition,true);
-            xmlhttp.send();
-            if (debug) {console.log(xmlhttp);console.log(petition);}
+            const auth = 1234;
+            let petition;
+            if (method === "post" || method === "patch"){
+                console.log("TELIMINARÉ");
+                petition = "api/" + method + "/job.php?auth="+ auth +"&id=" + id + "&dni=" + dni + "&type=" + type;
+                ajax.open("GET", petition, true);
+            } else {
+                petition = "api/" + method + "/job.php?auth="+ auth +"&id=" + id + force;
+                ajax.open("GET", petition, true);
+            }
+            ajax.send();
+            if (debug) {console.log(ajax);console.log(petition);}
             document.getElementById("url").innerHTML = "<span id='method'>[" + method + "]</span>  <a href=\"" + getCurrentDir() + "/" + petition + "\" target=\"_blank\">" + petition + "</a>";
             document.getElementById('method').style.color = getColor(method);
         }
@@ -131,11 +157,14 @@
 <body>
 <div class="toolbar">
     <button id="empty" onclick="emptySearchBox();">&#x2613;</button>
-    <input id="id" type="text" placeholder="id" onkeypress="handle(event, this.value)" oninput="showResult(this.value)">
+    <input id="id" type="text" placeholder="id" onkeypress="handle(event, this.value)" oninput="handle(event, this.value)">
     <button id="get" style="color: #2e3f59;" onclick="useMethod('get');">get</button>
     <button id="post" style="color: #30634F;" onclick="useMethod('post');">post</button>
+    <button id="patch" style="color: #a8a83e;" onclick="useMethod('patch');">patch</button>
     <button id="delete" style="color: #893d3d;" onclick="useMethod('delete');">delete</button>
     <input id="force" type="checkbox" title="Force deletion" onclick="forceDeletion(this.checked)">
+    <input id="dni" type="text" placeholder="DNI" style="margin-left: 10px" onkeypress="handle(event, this.value)" oninput="handle(event, this.value)">
+    <input id="type" type="text" placeholder="Type" onkeypress="handle(event, this.value)" oninput="handle(event, this.value)">
 </div>
 <br>
 <div id="url">

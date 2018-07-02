@@ -5,6 +5,8 @@
  * Time: 20:02
  */
 
+header('Content-Type: application/json');
+
 if (isset($_GET["auth"]) && isset($_GET["id"])) {
     require('../../functions/connection.php');
     require('../../functions/strings.php');
@@ -19,30 +21,33 @@ if (isset($_GET["auth"]) && isset($_GET["id"])) {
     }
     $auth = $_GET["auth"];
     $id = $_GET["id"];
+    if (empty($id)){
+        echo error('no id provided');
+    }
 
     $force = issetGetQuery('force',false);
 
-    $sql = "DELETE FROM maintenance WHERE id = '" . $id . "'";
+    if (!empty($id)) {
 
-    $check = json_decode(sqlGet("SELECT * FROM maintenance WHERE id = '" . $id . "'", $auth), true);
-    switch ($check["entries"]){ // Check number of entries with that id.
-        case 1:
+        $sql = "DELETE FROM maintenance WHERE id = '" . $id . "'";
+
+        $check = json_decode(sqlGet("SELECT * FROM maintenance WHERE id = '" . $id . "'", $auth), true);
+        if ($check["entries"] == 1) { // Check number of entries with that id.
             $output = sqlPost($sql, $auth);
             if ($output) { // Success message
                 echo json_encode(array('success' => true, 'deleted' => $check["output"]), JSON_UNESCAPED_UNICODE);
             }
-            break;
-        case 0:
-            echo error("No entries found.");
-            break;
-        default:
-            if ($force){
-                $output = sqlPost($sql, $auth);
-                if ($output) { // Success message
-                    echo json_encode(array('success' => true, 'deleted' => $check["output"]), JSON_UNESCAPED_UNICODE);
+        } else {
+                if ($force) {
+                    $output = sqlPost($sql, $auth);
+                    if ($output) { // Success message
+                        echo json_encode(array('success' => true, 'deleted' => $check["output"]), JSON_UNESCAPED_UNICODE);
+                    }
+                } else {
+                    echo error("More than one id found.");
                 }
-            } else {
-                echo error("More than one id found.");
             }
+        } else {
+        echo error("No entries found.");
     }
 }
