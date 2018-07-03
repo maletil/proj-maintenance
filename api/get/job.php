@@ -7,7 +7,7 @@
 
 header('Content-Type: application/json');
 
-if (isset($_GET["auth"])) {
+if (isset($_GET["auth"]) && isset($_GET["id"])) {
     require ('../../functions/connection.php');
     require ('../../functions/json.php');
     $path = "../../private/config.php";
@@ -19,7 +19,7 @@ if (isset($_GET["auth"])) {
     }
     $auth = $_GET["auth"];
 
-    if (isset($_GET["id"]) && !empty($_GET["id"])){ // Check if no blank id is given in query
+    if (!empty($_GET["id"])){ // Check if no blank id is given in query
         $id = $_GET["id"];
         $sql = "SELECT * FROM maintenance WHERE id = '".$id."'";
     } else { // If not, SELECT all
@@ -28,5 +28,6 @@ if (isset($_GET["auth"])) {
 
     $output = sqlGet($sql, $auth);
     validateJson($output);
+} else {
+    echo json_encode(array('error' => 'invalid input params'));
 }
-?>
