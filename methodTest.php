@@ -128,6 +128,10 @@
                 force = "";
         }
         let json;
+        function changeId(f){
+            document.getElementById("id").value = f;
+            id = f;
+        }
         function makerequest() {
             if (debug){ console.log("Me solicitan para: " + method);}
             ajax.onreadystatechange=function() {
@@ -135,11 +139,16 @@
                     json = JSON.parse(this.responseText);
                     //Fill input boxes with received info
                     if (json.entries === 1){
-                        console.log(json["output"][0]["id"]);
                         document.getElementById("dni").value = json.output[0].DNI;
                         document.getElementById("type").value = json.output[0].Type;
                     }
-                    document.getElementById("json").innerText = JSON.stringify(JSON.parse(this.responseText), null,  ' ');
+                    for(let i = 0; i < json.entries; i++) {
+                        let obj = json["output"][i];
+                        console.log(obj.id);
+
+                        obj.id = "<a id='entry' style='color:goldenrod' onclick='changeId(this.innerText);makerequest();'>"+obj.id+"</a>";
+                    }
+                    document.getElementById("json").innerHTML = JSON.stringify(json, null,  ' ');
                 }
             };
             const auth = 1234;
