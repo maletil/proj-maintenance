@@ -59,7 +59,7 @@
         let type = "";
         let force = "";
         //Config
-        let debug = true;
+        let debug = false;
         if (window.XMLHttpRequest) {
             // IE7+, Firefox, Chrome, Opera, Safari
             ajax=new XMLHttpRequest();
@@ -68,12 +68,7 @@
         }
         onload = function () {
             id = document.getElementById('id').value;
-            // let e = document.getElementById('id');
-            //e.oninput = showResult(document.getElementById('id'));
-            //e.onpropertychange = e.oninput;
-            //forceDeletion(document.getElementById('force').checked);
             useMethod('get');
-
         };
         function getCurrentDir() {
             let loc = window.location.pathname;
@@ -113,8 +108,10 @@
                     }
             }
         }
-        function emptySearchBox() {
+        function emptyInputBox() {
             document.getElementById('id').value = null;
+            document.getElementById('dni').value = null;
+            document.getElementById('type').value = null;
             id = "";
             method = 'get'; // Security?
             makerequest();
@@ -130,17 +127,24 @@
             } else
                 force = "";
         }
+        let json;
         function makerequest() {
             if (debug){ console.log("Me solicitan para: " + method);}
             ajax.onreadystatechange=function() {
                 if (this.readyState === 4 && this.status === 200) {
+                    json = JSON.parse(this.responseText);
+                    //Fill input boxes with received info
+                    if (json.entries === 1){
+                        console.log(json["output"][0]["id"]);
+                        document.getElementById("dni").value = json.output[0].DNI;
+                        document.getElementById("type").value = json.output[0].Type;
+                    }
                     document.getElementById("json").innerText = JSON.stringify(JSON.parse(this.responseText), null,  ' ');
                 }
             };
             const auth = 1234;
             let petition;
             if (method === "post" || method === "patch"){
-                console.log("TELIMINARÉ");
                 petition = "api/" + method + "/job.php?auth="+ auth +"&id=" + id + "&dni=" + dni + "&type=" + type;
                 ajax.open("GET", petition, true);
             } else {
@@ -148,6 +152,7 @@
                 ajax.open("GET", petition, true);
             }
             ajax.send();
+            //Info
             if (debug) {console.log(ajax);console.log(petition);}
             document.getElementById("url").innerHTML = "<span id='method'>[" + method + "]</span>  <a href=\"" + getCurrentDir() + "/" + petition + "\" target=\"_blank\">" + petition + "</a>";
             document.getElementById('method').style.color = getColor(method);
@@ -156,7 +161,7 @@
 </head>
 <body>
 <div class="toolbar">
-    <button id="empty" onclick="emptySearchBox();">&#x2613;</button>
+    <button id="empty" onclick="emptyInputBox();">&#x2613;</button>
     <input id="id" type="text" placeholder="id" onkeypress="handle(event, this.value)" oninput="handle(event, this.value)">
     <button id="get" style="color: #2e3f59;" onclick="useMethod('get');">get</button>
     <button id="post" style="color: #30634F;" onclick="useMethod('post');">post</button>
