@@ -40,7 +40,7 @@ if (isset($_GET["auth"])) {
 
         if (sqlPost($updateSql, $auth)){ // Check success in sqlPost.
             $checkSql = json_decode(sqlGet("SELECT * FROM maintenance WHERE id = '".$id."'", $auth), true); // Check updated row.
-            echo json_encode(array('success' => true,'created' => $checkSql["output"]), JSON_UNESCAPED_UNICODE);
+            echo json_encode(array('success' => true,'output' => $checkSql["output"]), JSON_UNESCAPED_UNICODE);
         }
     } else {
         echo error("Id doesn't exist.");

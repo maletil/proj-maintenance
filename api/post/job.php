@@ -45,11 +45,11 @@ if (isset($_GET["auth"]) && isset($_GET["dni"]) && isset($_GET["type"])) {
     if ($checkSql["entries"] == 0){ // Check if id doesn't already exist.
         if (sqlPost($insertSql, $auth)){ // Check success in sqlPost.
             $checkSql = json_decode(sqlGet("SELECT * FROM maintenance WHERE id = '".$id."'", $auth), true); // Check created row.
-            echo json_encode(array('success' => true,'created' => $checkSql["output"]), JSON_UNESCAPED_UNICODE);
+            echo json_encode(array('success' => true,'output' => $checkSql["output"]), JSON_UNESCAPED_UNICODE);
         }
     } else {
         echo error("Id already exists. Use PATCH instead.");
     }
 } else {
-    echo json_encode(array('error' => 'invalid input params'));
+    //echo json_encode(array('error' => 'invalid input params'));
 }

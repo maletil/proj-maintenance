@@ -48,6 +48,9 @@
             margin: 0;
             vertical-align: middle;
         }
+        #entry{
+            cursor:pointer;
+        }
         pre {
             margin: 0;
         }
@@ -113,6 +116,8 @@
             document.getElementById('dni').value = null;
             document.getElementById('type').value = null;
             id = "";
+            dni = "";
+            type = "";
             method = 'get'; // Security?
             makerequest();
         }
@@ -129,26 +134,59 @@
         }
         let json;
         function changeId(f){
+            method = "get"; //Security?
             document.getElementById("id").value = f;
             id = f;
         }
         function makerequest() {
-            if (debug){ console.log("Me solicitan para: " + method);}
-            ajax.onreadystatechange=function() {
-                if (this.readyState === 4 && this.status === 200) {
-                    json = JSON.parse(this.responseText);
-                    //Fill input boxes with received info
-                    if (json.entries === 1){
-                        document.getElementById("dni").value = json.output[0].DNI;
-                        document.getElementById("type").value = json.output[0].Type;
+            if (debug) {console.log(method+ " request.");}
+            ajax.onreadystatechange = function () {
+                if (this.readyState === 4) { //If request is made.
+                    if (this.status !== 0) { //If http header is recieved.
+                        if (debug) {
+                            console.log(this.status + " header received");
+                        }
+                        if (this.responseText === "") { //No response text in response
+                            if (debug) {
+                                console.log("No content received.")
+                            }
+                            document.getElementById("json").innerHTML = "<a style='color:darkred'>No content received from server.</a>"
+                        } else {
+                            //Only parse json if it isn't empty
+                            json = JSON.parse(this.responseText);
+                            //Fill input boxes with received info
+                            if (json.success === true) {
+                                if (debug) {
+                                    console.log("success");
+                                }
+                                if (method !== "get" || json.entries === 1) { //Only one entry from get method.
+                                    if (debug) {
+                                        console.log("only one entry");
+                                    }
+                                    dni = json.output[0].DNI;
+                                    document.getElementById("dni").value = json.output[0].DNI;
+                                    type = json.output[0].Type;
+                                    document.getElementById("type").value = json.output[0].Type;
+                                }
+                            }
+                            //Add label to 'id' in json.
+                            if (json.entries !== undefined) { //More than one entry
+                                for (let i = 0; i < json.entries; i++) {
+                                    let obj = json["output"][i];
+                                    // console.log(obj.id);
+                                    obj.id = "<a id='entry' style='color:goldenrod' onclick='changeId(this.innerText);makerequest();'>" + obj.id + "</a>";
+                                }
+                            } else { //Only one entry recieved.
+                                if (json.success === true) {//If success
+                                    json["output"][0].id = "<a id='entry' style='color:goldenrod' onclick='changeId(this.innerText);makerequest();'>" + json["output"][0].id + "</a>";
+                                }
+                            }
+                            //Finally show JSON after (html) changes.
+                            document.getElementById("json").innerHTML = JSON.stringify(json, null, ' ');
+                        }
+                    } else {
+                        document.getElementById("json").innerHTML = "<a style='color:darkred'>No response from server</a>"
                     }
-                    for(let i = 0; i < json.entries; i++) {
-                        let obj = json["output"][i];
-                        console.log(obj.id);
-
-                        obj.id = "<a id='entry' style='color:goldenrod' onclick='changeId(this.innerText);makerequest();'>"+obj.id+"</a>";
-                    }
-                    document.getElementById("json").innerHTML = JSON.stringify(json, null,  ' ');
                 }
             };
             const auth = 1234;

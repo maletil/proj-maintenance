@@ -23,6 +23,7 @@ if (isset($_GET["auth"]) && isset($_GET["id"])) {
     $id = $_GET["id"];
     if (empty($id)){
         echo error('no id provided');
+        die();
     }
 
     $force = issetGetQuery('force',false);
@@ -35,13 +36,13 @@ if (isset($_GET["auth"]) && isset($_GET["id"])) {
         if ($check["entries"] == 1) { // Check number of entries with that id.
             $output = sqlPost($sql, $auth);
             if ($output) { // Success message
-                echo json_encode(array('success' => true, 'deleted' => $check["output"]), JSON_UNESCAPED_UNICODE);
+                echo json_encode(array('success' => true, 'output' => $check["output"]), JSON_UNESCAPED_UNICODE);
             }
         } else {
                 if ($force) {
                     $output = sqlPost($sql, $auth);
                     if ($output) { // Success message
-                        echo json_encode(array('success' => true, 'deleted' => $check["output"]), JSON_UNESCAPED_UNICODE);
+                        echo json_encode(array('success' => true, 'output' => $check["output"]), JSON_UNESCAPED_UNICODE);
                     }
                 } else {
                     echo error("More than one id found.");
