@@ -146,7 +146,7 @@
                         if (debug) { console.log(this.status + " header received");}
                         if (this.responseText === "" || this.status === 204) { //No response text in response
                             if (debug) {console.log("No content received.")}
-                            document.getElementById("json").innerHTML = "<pre style='color:darkgreen'>" + this.status + " " + this.statusText + ".</pre>"
+                            document.getElementById("json").innerHTML = "<pre style='color:goldenrod'>" + this.status + " " + this.statusText + ".</pre>"
                             document.getElementById("json").innerHTML += "<a style='color:darkred'>No content received from server.</a>"
                         } else {
                             //Only parse json if it isn't empty

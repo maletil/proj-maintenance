@@ -39,6 +39,7 @@ if (isset($_GET["auth"]) && isset($_GET["id"])) {
                 echo json_encode(array('success' => true, 'output' => $check["output"]), JSON_UNESCAPED_UNICODE);
             }
         } else {
+            if ($check["entries"] > 1) { // This should never happen. Just in case.
                 if ($force) {
                     $output = sqlPost($sql, $auth);
                     if ($output) { // Success message
@@ -47,8 +48,11 @@ if (isset($_GET["auth"]) && isset($_GET["id"])) {
                 } else {
                     echo error("More than one id found.");
                 }
+            } else {
+                echo error("Id doesn't exist.");
+            }
             }
         } else {
-        echo error("No entries found.");
+        echo json_encode(array('error' => 'invalid input params'));
     }
 }
