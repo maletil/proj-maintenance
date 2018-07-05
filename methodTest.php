@@ -143,14 +143,11 @@
             ajax.onreadystatechange = function () {
                 if (this.readyState === 4) { //If request is made.
                     if (this.status !== 0) { //If http header is recieved.
-                        if (debug) {
-                            console.log(this.status + " header received");
-                        }
-                        if (this.responseText === "") { //No response text in response
-                            if (debug) {
-                                console.log("No content received.")
-                            }
-                            document.getElementById("json").innerHTML = "<a style='color:darkred'>No content received from server.</a>"
+                        if (debug) { console.log(this.status + " header received");}
+                        if (this.responseText === "" || this.status === 204) { //No response text in response
+                            if (debug) {console.log("No content received.")}
+                            document.getElementById("json").innerHTML = "<pre style='color:darkgreen'>" + this.status + " " + this.statusText + ".</pre>"
+                            document.getElementById("json").innerHTML += "<a style='color:darkred'>No content received from server.</a>"
                         } else {
                             //Only parse json if it isn't empty
                             json = JSON.parse(this.responseText);

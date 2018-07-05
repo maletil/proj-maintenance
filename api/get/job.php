@@ -27,7 +27,16 @@ if (isset($_GET["auth"]) && isset($_GET["id"])) {
     }
 
     $output = sqlGet($sql, $auth);
-    validateJson($output);
+    if (!$output){
+        header("HTTP/1.1 204 No Content");
+    } else {
+        if (json_encode($output) !== null) {
+            echo $output;
+        } else {
+            $requestError = array("valid" => false, "output" => $output);
+            return json_encode($requestError);
+        }
+    }
 } else {
     echo json_encode(array('error' => 'invalid input params'));
 }

@@ -43,30 +43,23 @@ function mysqlDBDisconnect ($conn) {
 
 function sqlGet ($sql, $auth){ // Returns json
     //TODO authcode.
-    if ($sql !== ""){
-        $outputArray = getArraySQL($sql);
-        return json_encode($outputArray, JSON_UNESCAPED_UNICODE);
-    } else {
-        return false;
-    }
-}
 
-function getArraySQL($sql){ // Returns array
-    $conn = mysqlDBConnect();
-    $entries = 0;
-    if(!$result = mysqli_query($conn, $sql)) return(array("entries" => $entries));
+        $conn = mysqlDBConnect();
+        $entries = 0;
+        if(!$result = mysqli_query($conn, $sql)) return(array("entries" => $entries));
 
-    $sqlArray = array();
-    while($row =mysqli_fetch_assoc($result)) {
-        $sqlArray[] = $row;
-        $entries++;
-    }
-    mysqlDBDisconnect($conn);
-    if ($entries !== 0) {
-        return array("success" => true, "entries" => $entries, "output" => $sqlArray);
-    } else {
-        return array("success" => true, 'entries' => $entries);
-    }
+        $sqlArray = array();
+        while($row =mysqli_fetch_assoc($result)) {
+            $sqlArray[] = $row;
+            $entries++;
+        }
+        mysqlDBDisconnect($conn);
+        if ($entries == 0) {
+            return false;
+        } else {
+            $outputArray = array("success" => true, "entries" => $entries, "output" => $sqlArray);
+            return json_encode($outputArray, JSON_UNESCAPED_UNICODE);
+        }
 }
 
 // Post, Delete requests.
